@@ -1,0 +1,40 @@
+####
+#Hey!
+#First of all, we need write down the current WAN IP into layer7-protocol
+#
+
+/ip firewall layer7-protocol add name=wan_ip regexp=<Your current WAN IP>
+
+####
+#Then we can use the main script in the "IP"->"DHCP-Client"->"Script"
+####
+
+{
+:if ($bound =1) do={
+
+#Add local variables
+:local TelToken "<Your Telegram bot tocken>";
+:local IdChat "<Your Telegram chat ID>";
+:local NAME ([/system identity get name]);
+:local TIME ([/system clock get time]);
+:local UPTIME ([/system resource get uptime]);
+
+:local EXERNAL [/ip address get [find interface="ether1"] address];
+
+:local NEWIP [/ip firewall layer7-protocol find where name=wan_ip];
+
+#Checking if the WAN IP has chanded
+       
+ :if ([ /ip firewall layer7-protocol get $NEWIP regexp ] != $"lease-address") do={
+
+             /ip firewall layer7-protocol set $NEWIP regexp=$"lease-address";
+
+delay 3s;
+
+
+#Send Message to the Telegram
+[/tool fetch "https://api.telegram.org/bot$TelToken/sendMessage\?chat_id=$IdChat&text=The ($NAME) has changed an IP. The current IP is $EXTERNAL. Uptime is $UPTIME for now"];
+} 
+                                                                               }
+}
+
