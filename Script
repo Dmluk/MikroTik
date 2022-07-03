@@ -13,7 +13,7 @@
 :if ($bound =1) do={
 
 #Add local variables
-:local TelToken "<Your Telegram bot tocken>";
+:local TelToken "<Your Telegram bot token>";
 :local IdChat "<Your Telegram chat ID>";
 :local NAME ([/system identity get name]);
 :local TIME ([/system clock get time]);
